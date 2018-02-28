@@ -2,12 +2,12 @@
 
 class MW_OAuth {
 
-	var $use_cookies = true ;
+	var $use_cookies = 0 ;
 	var $tool ;
-	var $debugging = false ;
+	var $debugging = true ;
 	var $language , $project ;
 	var $ini_file , $params ;
-	var $mwOAuthUrl = 'https://www.mediawiki.org/w/index.php?title=Special:OAuth';
+	var $mwOAuthUrl = 'http://172.20.48.41/wiki/index.php?title=Special:OAuth';
 	var $mwOAuthIW = 'mw'; // Set this to the interwiki prefix for the OAuth central wiki.
 	var $userinfo ;
 	
@@ -17,10 +17,7 @@ class MW_OAuth {
 		$this->project = $p ;
 		$this->ini_file = "/data/project/$t/oauth.ini" ;
 		
-		if ( $l == 'wikidata' ) $this->apiUrl = 'https://www.wikidata.org/w/api.php' ;
-		elseif ( $l == 'commons' ) $this->apiUrl = 'https://commons.wikimedia.org/w/api.php' ;
-		elseif ( $p == 'mediawiki' ) $this->apiUrl = 'https://www.mediawiki.org/w/api.php' ;
-		else $this->apiUrl = "https://$l.$p.org/w/api.php" ;
+		$this->apiUrl = "http://172.20.48.41/wiki/api.php" ;
 
 		$this->loadIniFile() ;
 		$this->setupSession() ;
@@ -100,7 +97,7 @@ class MW_OAuth {
 		$url .= "&oauth_signature=" . urlencode( $this->signature );
 		$ch = curl_init();
 		curl_setopt( $ch, CURLOPT_URL, $url );
-		//curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_USERAGENT, $this->gUserAgent );
 		curl_setopt( $ch, CURLOPT_HEADER, 0 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
@@ -111,19 +108,19 @@ class MW_OAuth {
 		}
 
 		if ( !$data ) {
-//			header( "HTTP/1.1 500 Internal Server Error" );
+			header( "HTTP/1.1 500 Internal Server Error" );
 			echo 'Curl error: ' . htmlspecialchars( curl_error( $ch ) );
 			exit(0);
 		}
 		curl_close( $ch );
 		$token = json_decode( $data );
 		if ( is_object( $token ) && isset( $token->error ) ) {
-//			header( "HTTP/1.1 500 Internal Server Error" );
+			header( "HTTP/1.1 500 Internal Server Error" );
 			echo 'Error retrieving token: ' . htmlspecialchars( $token->error );
 			exit(0);
 		}
 		if ( !is_object( $token ) || !isset( $token->key ) || !isset( $token->secret ) ) {
-//			header( "HTTP/1.1 500 Internal Server Error" );
+			header( "HTTP/1.1 500 Internal Server Error" );
 			echo 'Invalid response from token request';
 			exit(0);
 		}
@@ -501,7 +498,7 @@ Claims are used like this:
 	function doesClaimExist ( $claim ) {
 		$q = 'Q' . str_replace('Q','',$claim['q'].'') ;
 		$p = 'P' . str_replace('P','',$claim['prop'].'') ;
-		$url = 'https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=claims&ids=' . $q ;
+		$url = 'http://172.20.48.41/wiki/api.php?action=wbgetentities&format=json&props=claims&ids=' . $q ;
 		$j = json_decode ( file_get_contents ( $url ) ) ;
 	//	print "<pre>" ; print_r ( $j ) ; print "</pre>" ;
 

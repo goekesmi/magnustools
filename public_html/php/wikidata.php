@@ -1,7 +1,7 @@
 <?PHP
 
 $wikidata_preferred_langs = array ('en','de','nl','fr','es','it','zh') ;
-$wikidata_api_url = 'https://www.wikidata.org/w/api.php' ;
+$wikidata_api_url = 'http://172.20.48.41/wiki/api.php' ;
 
 class WDI {
 
@@ -346,7 +346,7 @@ class WikidataItemList {
 	
 	public function loadItemByPage ( $page , $wiki ) {
 		$page = urlencode ( ucfirst ( str_replace ( ' ' , '_' , trim($page) ) ) ) ;
-		$url = "https://www.wikidata.org/w/api.php?action=wbgetentities&sites=$wiki&titles=$page&format=json" ;
+		$url = "http://172.20.48.41/wiki/api.php?action=wbgetentities&sites=$wiki&titles=$page&format=json" ;
 		$j = json_decode ( file_get_contents ( $url ) ) ;
 		if ( !isset($j) or !isset($j->entities) ) return false ;
 		$this->parseEntities ( $j ) ;
